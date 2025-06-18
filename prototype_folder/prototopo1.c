@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <menu.h>
 
 #define MAX_NOMBRE 50
 #define MAX_ESTADO 20
