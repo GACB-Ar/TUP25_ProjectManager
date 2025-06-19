@@ -71,3 +71,15 @@ Remove-Item .\project_manager.exe -ErrorAction SilentlyContinue
      - Abrir **Panel de control** → Sistema → Configuración avanzada → Variables de entorno.
      - Editar la variable `Path` en el **área del sistema** o del **usuario**.
   3. Reinicia PowerShell para que tome los cambios.
+
+---
+#TO DO
+
+- Agregar el responsable responsables a proyectos y tareas asociadas
+- agregar estado de tareas (pendiente, en progreso, completada)
+- Mostrar tareas por proyecto o por responsable
+- Buscar por nombre o estado
+- Ordenar tareas por fecha o prioridad
+- Guardar datos en archivos.
+
+---
