@@ -6,9 +6,9 @@ Este proyecto implementa un sistema de gestión de tareas y proyectos en C usand
 
 ## Integrantes del Grupo
 
--   @agostinaj1:Agostina Jara
--   @SofiaSVBD: Sofia Svoboda
--   @GACB-Ar: Geronimo Angel Cespedes Bochle
+-   @agostinaj1 -> Agostina Jara
+-   @SofiaSVBD -> Sofia Svoboda
+-   @GACB-Ar -> Geronimo Angel Cespedes Bochle
 
 ---
 
