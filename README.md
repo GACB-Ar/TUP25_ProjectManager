@@ -73,7 +73,7 @@ Remove-Item .\project_manager.exe -ErrorAction SilentlyContinue
   3. Reinicia PowerShell para que tome los cambios.
 
 ---
-#TO DO
+# TO DO
 
 - Agregar el responsable responsables a proyectos y tareas asociadas
 - agregar estado de tareas (pendiente, en progreso, completada)
