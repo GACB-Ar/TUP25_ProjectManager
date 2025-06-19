@@ -75,7 +75,7 @@ Remove-Item .\project_manager.exe -ErrorAction SilentlyContinue
 ---
 # TO DO
 
-- Agregar el responsable responsables a proyectos y tareas asociadas
+- Agregar el nombre de responsable a proyectos y tareas asociadas
 - agregar estado de tareas (pendiente, en progreso, completada)
 - Mostrar tareas por proyecto o por responsable
 - Buscar por nombre o estado
