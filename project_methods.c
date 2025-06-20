@@ -1,111 +1,119 @@
+#include "project_methods.h"
 #include "task_methods.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-struct Project {
-    char *name;
-    struct Task *tasks; // Pointer to the list of tasks associated with the project
-    struct Project *next; // Pointer to the next project in the list
-};
+static char * str_dup(const char *s) {
+    char *d = malloc(strlen(s)+1);
+    if (d) strcpy(d, s);
+    return d;
+}
 
-struct Project * project_create(const char *project_name) {
-    struct Project *new_project = malloc(sizeof *new_project);
-    if (!new_project) return NULL;
-    
-    new_project->name = strdup(project_name);
-    if (!new_project->name) {
-        free(new_project); // Free the allocated project if strdup fails
+struct Project * project_create(const char *project_name,
+                                const char *created_date,
+                                const char *created_by,
+                                int status)
+{
+    struct Project *p = malloc(sizeof *p);
+    if (!p) return NULL;
+    p->name         = str_dup(project_name);
+    p->created_date = str_dup(created_date);
+    p->created_by   = str_dup(created_by);
+    p->status       = status;
+    p->tasks        = NULL;
+    p->next         = NULL;
+    if (!p->name || !p->created_date || !p->created_by) {
+        free(p->name);
+        free(p->created_date);
+        free(p->created_by);
+        free(p);
         return NULL;
     }
-    
-    new_project->tasks = NULL; // Initialize the task list to NULL
-    new_project->next = NULL; // Initialize the next project pointer to NULL
-    return new_project;
+    return p;
 }
 
-void project_insert_end(struct Project **project_list_head, struct Project *new_project) {
+void project_insert_end(struct Project **head, struct Project *new_project) {
     if (!new_project) return;
-    if (*project_list_head == NULL) {
-        *project_list_head = new_project;
-    } else {
-        struct Project *cursor = *project_list_head;
-        while (cursor->next != NULL) {
-            cursor = cursor->next;
-        }
-        cursor->next = new_project;
+    if (*head==NULL) *head = new_project;
+    else {
+        struct Project *c = *head;
+        while (c->next) c = c->next;
+        c->next = new_project;
     }
 }
 
-bool project_search(const struct Project *project_list_head, const char *project_name) {
-    const struct Project *cursor = project_list_head;
-    while (cursor != NULL) {
-        if (strcmp(cursor->name, project_name) == 0) {
-            return true;
-        }
-        cursor = cursor->next;
+bool project_search(const struct Project *head, const char *project_name) {
+    while (head) {
+        if (strcmp(head->name, project_name)==0) return true;
+        head = head->next;
     }
     return false;
 }
 
-struct Project * project_find(const struct Project *head, const char *project_name) {
+struct Project * project_find(const struct Project *head,
+                              const char *project_name)
+{
     while (head) {
-        if (strcmp(head->name, project_name) == 0) {
-            return (struct Project *)head;
-        }
+        if (strcmp(head->name, project_name)==0)
+            return (struct Project*)head;
         head = head->next;
     }
     return NULL;
 }
 
-bool project_delete(struct Project **project_list_head, const char *project_name) {
-    struct Project *cursor = *project_list_head;
-    struct Project *previous = NULL;
-
-    while (cursor != NULL && strcmp(cursor->name, project_name) != 0) {
-        previous = cursor;
-        cursor = cursor->next;
+bool project_delete(struct Project **head, const char *project_name) {
+    struct Project *cur = *head, *prev = NULL;
+    while (cur && strcmp(cur->name, project_name)!=0) {
+        prev = cur; cur = cur->next;
     }
-    if (cursor == NULL) return false; // Project not found
-    if (previous == NULL) {
-        *project_list_head = cursor->next; // Deleting the head of the list
-    } else {
-        previous->next = cursor->next; // Bypass the cursor
-    }
-
-    task_free_all(cursor->tasks); // Free all tasks associated with the project
-    free(cursor->name); // Free the project name
-    free(cursor); // Free the project itself
+    if (!cur) return false;
+    if (!prev) *head = cur->next;
+    else       prev->next = cur->next;
+    task_free_all(cur->tasks);
+    free(cur->name);
+    free(cur->created_date);
+    free(cur->created_by);
+    free(cur);
     return true;
 }
 
-void project_add_task(struct Project *project, const char *task_name) {
-    if (!project) return; // Ensure the project exists
-    struct Task *new_task = task_create(task_name); // Create a new task
-    task_insert_end(&project->tasks, new_task); // Insert the new task at the end of the task list
+void project_add_task(struct Project *p,
+                      const char *task_name,
+                      const char *created_date,
+                      const char *created_by,
+                      int status)
+{
+    if (!p) return;
+    struct Task *t = task_create(task_name, created_date, created_by, status);
+    task_insert_end(&p->tasks, t);
 }
 
-bool project_remove_task(struct Project *project, const char *task_name) {
-    if (!project) return false; // Ensure the project exists
-    return task_delete(&project->tasks, task_name); // Delete the task from the project's task list
+bool project_remove_task(struct Project *p, const char *task_name) {
+    if (!p) return false;
+    return task_delete(&p->tasks, task_name);
 }
 
-void project_show_all(const struct Project *project_list_head) {
-    const struct Project *cursor = project_list_head;
-    while (cursor != NULL) {
-        printf("Proyecto: %s\n", cursor->name); // Print the project name
-        task_show_all(cursor->tasks); // Show all tasks associated with the project
-        cursor = cursor->next; // Move to the next project
+void project_show_all(const struct Project *head) {
+    while (head) {
+        printf("Proyecto: %s | %s | %s | %d\n",
+               head->name,
+               head->created_date,
+               head->created_by,
+               head->status);
+        task_show_all(head->tasks);
+        head = head->next;
     }
 }
 
-void project_free_all(struct Project *project_list_head) {
-    struct Project *cursor = project_list_head;
-    while (cursor != NULL) {
-        struct Project *next_project = cursor->next; // Store the next project
-        task_free_all(cursor->tasks); // Free all tasks associated with the project
-        free(cursor->name); // Free the project name
-        free(cursor); // Free the project itself
-        cursor = next_project; // Move to the next project
+void project_free_all(struct Project *head) {
+    while (head) {
+        struct Project *nx = head->next;
+        task_free_all(head->tasks);
+        free(head->name);
+        free(head->created_date);
+        free(head->created_by);
+        free(head);
+        head = nx;
     }
 }
