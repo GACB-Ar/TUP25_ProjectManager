@@ -2,7 +2,7 @@
 $outputExecutable = "project_manager.exe"
 
 # Define the source files
-$sourceFiles = @("main.c", "project_methods.c", "task_methods.c")
+$sourceFiles = @("main.c", "project_methods.c", "task_methods.c", "file.c")
 
 # Check if gcc is available
 $gccPath = Get-Command gcc -ErrorAction SilentlyContinue
